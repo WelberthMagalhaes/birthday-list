@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String // ADMIN, MODERATOR, STANDARD
+  createdAt DateTime @default(now()) // Registro de criação
+  updatedAt DateTime @updatedAt // Registro de atualização
+}
+
+model Person {
+  id        Int      @id @default(autoincrement())
+  name      String
+  birthDate DateTime
+  createdAt DateTime @default(now()) // Registro de criação
+  updatedAt DateTime @updatedAt // Registro de atualização
+}
+
+// Tabela para logs de ações de usuários
+model UserLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int // Referência ao usuário que fez a ação
+  action     String // Descrição da ação (ex: "create", "edit", "delete")
+  targetId   Int // ID do objeto afetado (pode ser do modelo Person ou User)
+  targetType String // Tipo de objeto afetado (ex: "Person" ou "User")
+  createdAt  DateTime @default(now()) // Registro de criação
+  user       Int // Referência com o modelo User mas sem relação
+}
+
+// Tabela para logs de ações de administradores
+model AdminLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int // Referência ao usuário admin que fez a ação
+  action    String // Descrição da ação (ex: "delete_user", "create_user", "change_role", "delete_person", "create_person")
+  targetId  Int // ID do objeto afetado
+  name      String // Nome do objeto afetado
+  createdAt DateTime @default(now()) // Registro de criação
+  userId    Int // Referência com o modelo User mas sem relação
+}
